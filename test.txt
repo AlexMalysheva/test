@@ -1,0 +1,89 @@
+package autotest;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+
+public class testHar extends BaseTest {
+	 private String source;
+	@Test
+	  public void testNew2() throws Exception {
+	    driver.get(baseUrl + "/");
+	    driver.findElement(By.linkText("Маркет")).click();
+	    driver.findElement(By.linkText("Электроника")).click();
+	    driver.findElement(By.linkText("Наушники")).click();
+	    driver.findElement(By.linkText("Расширенный поиск →")).click();
+	    driver.findElement(By.id("glf-pricefrom-var")).click();
+	    driver.findElement(By.id("glf-pricefrom-var")).clear();
+	    driver.findElement(By.id("glf-pricefrom-var")).sendKeys("5000");
+	    driver.findElement(By.xpath("//div[3]/span/label")).click();
+	    driver.findElement(By.id("glf-1801946-8455647")).click();
+	    driver.findElement(By.xpath("(//button[@type='button'])[5]")).click();
+	    driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+	 
+	    String source = GetPageSource(driver.getCurrentUrl());
+	        List<String> products = GetProductList(source);
+	        for(String item: products){
+	            System.out.println(item);
+	        
+	        }
+	        driver.findElement(By.cssSelector("#header-search")).sendKeys(first);
+	    }
+	   
+	    private static String GetPageSource(String html){
+	        URL yahoo = null;
+	        try {
+	            yahoo = new URL(html);
+	        } catch (MalformedURLException e) {
+	            
+	            e.printStackTrace();
+	        }
+	       
+	        try {
+	        BufferedReader in = new BufferedReader(
+	                    new InputStreamReader(
+	                    yahoo.openStream()));
+	 
+	        String inputLine;
+	        String toReturn = null;
+	        while ((inputLine = in.readLine()) != null)
+	            toReturn += inputLine;
+	 
+	        in.close();
+	        return toReturn;
+	        }
+	        catch (IOException e){
+	           
+	        }
+	        return null;
+	    }
+	   
+	    public static List<String> GetProductList(String html){  
+	        List<String> products = new ArrayList<String>();
+	        Pattern p = Pattern.compile("<span class=\"snippet-card__header-text\">([^\"]+)</span>");  
+	        Matcher m = p.matcher(html);  
+	        while(m.find()){
+	            products.add(m.group(1));
+	        }
+	       
+	        return products;
+	 
+	   }
+	    List<String> list = GetProductList(source); 
+	    String first = list.get(0); 
+    
+
+
+}
